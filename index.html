@@ -3,53 +3,48 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>نوار پایین سه‌تایی — نمونه</title>
+  <title>نوار پایین سه‌تایی — تصحیح باگ</title>
   <style>
     :root{
       --bg: #ffffff;
       --pill-bg: rgba(0,0,0,0.05);
-      --pill-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      --pill-shadow: 0 10px 30px rgba(0,0,0,0.12);
       --active-bg: #ffffff;
-      --accent: #2b98c9; /* رنگ پیش‌فرض اکتیو — قابل تغییر */
-      --muted: #444;
-      --pill-radius: 40px;
+      --accent: #2187c9;
+      --muted: #333;
+      --pill-radius: 44px;
       --pill-padding: 8px;
       --width-max: 760px;
     }
-
     html,body{
       height:100%;
       margin:0;
       background:var(--bg);
       font-family: "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
       color:var(--muted);
+      -webkit-font-smoothing:antialiased;
     }
 
-    /* ظرف کلی */
     .app{
       min-height:100%;
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:flex-start;
-      padding:32px 16px 110px; /* جا برای نوار پایین */
+      padding:32px 16px 120px;
       box-sizing:border-box;
     }
 
-    /* محتوای تب‌ها */
     .pages{
       width:100%;
       max-width:var(--width-max);
-      height:360px;
+      height:420px;
       background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
       border-radius:14px;
       display:flex;
       overflow:hidden;
       position:relative;
     }
-
     .page{
       min-width:100%;
       padding:24px;
@@ -58,10 +53,8 @@
       align-items:center;
       justify-content:center;
       font-size:20px;
-      transition:opacity .28s ease;
     }
 
-    /* نوار پایین — ظرف خارجی */
     .bottom-wrap{
       position:fixed;
       bottom:18px;
@@ -69,13 +62,12 @@
       transform:translateX(-50%);
       width:calc(100% - 40px);
       max-width:calc(var(--width-max) + 64px);
-      pointer-events:none; /* برای جلوگیری از کلیک روی فضای اطراف */
-      z-index:40;
+      z-index:60;
+      pointer-events:none;
     }
 
-    /* خودِ پیِل */
     .pill{
-      pointer-events:auto; /* تعامل فقط داخل پیِل فعال است */
+      pointer-events:auto;
       margin:0 auto;
       background:var(--pill-bg);
       border-radius:var(--pill-radius);
@@ -85,19 +77,19 @@
       align-items:center;
       justify-content:space-between;
       position:relative;
-      height:76px;
+      height:82px;
       overflow:visible;
     }
 
-    /* سه آیتم */
     .nav{
       display:flex;
-      gap:6px;
+      gap:8px;
       width:100%;
       align-items:center;
       justify-content:space-between;
       padding:6px 12px;
       box-sizing:border-box;
+      position:relative; /* مهم: مرجع محاسبه حباب */
     }
 
     .nav button{
@@ -108,58 +100,74 @@
       align-items:center;
       justify-content:center;
       flex:1 1 0;
-      padding:8px 12px;
-      border-radius:28px;
+      padding:8px 14px;
+      border-radius:32px;
       position:relative;
-      z-index:2; /* بالاتر از باتن مووینگ */
+      z-index:3; /* بالاتر از حباب */
       text-align:center;
       color:var(--muted);
       user-select:none;
+      transition: color .22s ease;
     }
 
     .nav button:focus{
-      outline:2px solid rgba(43,152,201,0.24);
-      outline-offset:3px;
+      outline:3px solid rgba(33,135,201,0.16);
+      outline-offset:4px;
       border-radius:28px;
     }
 
-    .nav .label{
+    .label{
       font-size:13px;
       line-height:1;
       display:block;
-      direction:ltr; /* برای جلوگیری از بهم‌ریختن متن و آیکن */
+      direction:ltr;
+      color:var(--muted);
     }
 
-    /* حباب اکتیو متحرک (شبیه عکس وسط) */
+    /* حباب سفید داخلی */
     .active-bubble{
       position:absolute;
       top:6px;
       bottom:6px;
-      width:34%;
-      left:calc(33.3333% * 0 + 6px);
-      margin-left:6px;
-      margin-right:6px;
-      border-radius:28px;
-      background:linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,1));
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+      left:0;
+      width:0;
+      border-radius:32px;
+      background:linear-gradient(180deg,#fff,#fbfbfb);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
       transition: left .28s cubic-bezier(.2,.9,.2,1), width .28s cubic-bezier(.2,.9,.2,1);
       z-index:1;
       display:flex;
       align-items:center;
       justify-content:center;
+      pointer-events:none;
+      border:2px solid rgba(0,0,0,0.03);
     }
 
-    /* نمای داخلی آیکن بزرگ درون حباب */
+    /* قاب رنگی ریز دور آیکن (آبی) که هم‌زمان حرکت کند */
+    .active-outline{
+      position:absolute;
+      top:10px;
+      height:56px;
+      width:56px;
+      border-radius:16px;
+      box-sizing:border-box;
+      border:2px solid rgba(33,135,201,0.12);
+      transition: left .28s cubic-bezier(.2,.9,.2,1), width .28s cubic-bezier(.2,.9,.2,1);
+      z-index:2;
+      pointer-events:none;
+      background:transparent;
+    }
+
     .bubble-inner{
       display:flex;
       align-items:center;
       justify-content:center;
       gap:8px;
-      padding:10px 12px;
+      padding:0 6px;
       border-radius:22px;
+      pointer-events:none;
     }
 
-    /* آیکن‌های نمونه (SVG) */
     .icon{
       width:28px;
       height:28px;
@@ -167,128 +175,174 @@
       flex-shrink:0;
     }
 
-    /* متنِ زیر آیکن */
     .muted{
       font-size:12px;
-      opacity:.9;
+      opacity:.95;
       color:var(--muted);
     }
 
-    /* وضعیت فعال: رنگ آیکن و متن */
-    .nav button.active .muted{
+    .nav button.active .muted,
+    .nav button.active .label{
       color:var(--accent);
       font-weight:600;
     }
-    .nav button.active svg { filter: none; }
+    .nav button.active svg { color:var(--accent); filter:none; }
 
-    /* کوچک‌سازی برای موبایل */
+    /* مخفی‌سازی متن روی موبایل برای فشردگی */
     @media (max-width:420px){
-      .pill{ height:68px; }
-      .active-bubble{ top:8px; bottom:8px; }
-      .icon{ width:24px; height:24px; }
+      .label{ display:none; }
+      .pill{ height:72px; }
+      .active-outline{ height:50px; width:50px; top:12px; }
+      .icon{ width:22px; height:22px; }
     }
+
+    /* افکت حرکت صفحات */
+    #pages{
+      display:flex;
+      transition: transform .28s cubic-bezier(.2,.9,.2,1);
+    }
+
   </style>
 </head>
 <body>
   <div class="app" id="app">
     <div class="pages" id="pages" aria-live="polite">
-      <section class="page" data-index="0" id="page-0">صفحهٔ «مخاطبین» — محتوای نمونه</section>
-      <section class="page" data-index="1" id="page-1">صفحهٔ «تماس‌ها» — محتوای نمونه</section>
-      <section class="page" data-index="2" id="page-2">صفحهٔ «چت‌ها» — محتوای نمونه</section>
+      <section class="page" data-index="0" id="page-0">
+        <div style="text-align:center;">
+          <h2>اطلاعات کاربر</h2>
+          <p>نام، شماره، نقش و خلاصه‌ای از اطلاعات کاربر در این بخش نمایش داده می‌شود.</p>
+        </div>
+      </section>
+      <section class="page" data-index="1" id="page-1">
+        <div style="text-align:center;">
+          <h2>اخبار</h2>
+          <p>لیستی از آخرین خبرها یا اعلان‌ها در این بخش قرار می‌گیرد.</p>
+        </div>
+      </section>
+      <section class="page" data-index="2" id="page-2">
+        <div style="text-align:center;">
+          <h2>لیست</h2>
+          <p>فهرستی از آیتم‌ها، وظایف یا موارد مرتبط نمایش داده می‌شود.</p>
+        </div>
+      </section>
     </div>
   </div>
 
-  <!-- نوار پایین -->
   <div class="bottom-wrap" role="navigation" aria-label="نوار ناوبری پایین">
     <div class="pill" id="pill" style="max-width:var(--width-max);">
-      <div class="nav" role="tablist" aria-orientation="horizontal">
-        <!-- دکمه‌ها: آیکن‌ها اینجا قابل جایگزینی با <img src="..."> هستند -->
+      <div class="nav" id="nav" role="tablist" aria-orientation="horizontal">
         <button role="tab" aria-selected="false" aria-controls="page-0" data-index="0" tabindex="0">
-          <!-- نمونه SVG: جایگزین با عکس‌ شما شود -->
+          <!-- آیکن: اطلاعات کاربر (قابل جایگزینی با <img>) -->
           <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/>
             <path d="M4 20c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
-          <span class="label muted">مخاطبین</span>
+          <span class="label muted">کاربر</span>
         </button>
 
         <button role="tab" aria-selected="false" aria-controls="page-1" data-index="1" tabindex="0">
+          <!-- آیکن اخبار -->
           <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M3 11a9 9 0 0 0 18 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 2v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M7 9h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M7 13h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
-          <span class="label muted">تماس‌ها</span>
+          <span class="label muted">اخبار</span>
         </button>
 
         <button role="tab" aria-selected="true" aria-controls="page-2" data-index="2" tabindex="0" class="active">
+          <!-- آیکن لیست -->
           <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M4 6h16v10H5.5L4 17.5V6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 10h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 12h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 18h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="4.5" cy="6" r="1" fill="currentColor"/>
+            <circle cx="4.5" cy="12" r="1" fill="currentColor"/>
+            <circle cx="4.5" cy="18" r="1" fill="currentColor"/>
           </svg>
-          <span class="label muted">چت‌ها</span>
+          <span class="label muted">لیست</span>
         </button>
-      </div>
 
-      <!-- حباب فعال که زیرِ دکمه‌ها می‌لغزد -->
-      <div class="active-bubble" id="activeBubble" aria-hidden="true">
-        <div class="bubble-inner">
-          <!-- می‌توانید آیکن بزرگتر یا تصویری داخل این بخش قرار دهید -->
-          <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M4 6h16v10H5.5L4 17.5V6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 10h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
+        <!-- حباب و قاب متحرک -->
+        <div class="active-bubble" id="activeBubble" aria-hidden="true">
+          <div class="bubble-inner" id="bubbleInner">
+            <!-- آیکن داخل حباب (اختیاری) -->
+            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M8 12h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M8 18h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
         </div>
+
+        <div class="active-outline" id="activeOutline" aria-hidden="true"></div>
       </div>
     </div>
   </div>
 
   <script>
     (function(){
-      const buttons = Array.from(document.querySelectorAll('.nav button'));
+      const nav = document.getElementById('nav');
+      const buttons = Array.from(nav.querySelectorAll('button'));
       const bubble = document.getElementById('activeBubble');
+      const outline = document.getElementById('activeOutline');
       const pages = document.getElementById('pages');
       const pageEls = Array.from(document.querySelectorAll('.page'));
-      let activeIndex = 2; // مطابق تصویر، وسط یا آخر را می‌خواهید پیش‌فرض؟ اینجا 2 (چت‌ها) انتخاب شده
+      let activeIndex = 2; // پیش‌فرض: لیست
 
-      // اندازه و موقعیت حباب را بر اساس دکمه‌ها تنظیم می‌کند
+      // به‌روزرسانی موقعیت و اندازهٔ حباب و قاب رنگی نسبت به کانتینر .nav
       function updateBubble(toIndex, animate = true){
-        const pill = document.querySelector('.pill');
         const btn = buttons[toIndex];
         if(!btn) return;
-        // موقعیت نسبت به ظرف نوار
-        const pillRect = pill.getBoundingClientRect();
-        const btnRect = btn.getBoundingClientRect();
-        const left = btnRect.left - pillRect.left + 6; // فاصله داخلی
-        const width = btnRect.width - 12;
+        // استفاده از offsetLeft/offsetWidth نسبت به nav (پایدارتر و ساده‌تر)
+        const left = btn.offsetLeft;
+        const width = btn.offsetWidth;
+        // تنظیم انیمیشن
         if(!animate){
           bubble.style.transition = 'none';
+          outline.style.transition = 'none';
         } else {
           bubble.style.transition = '';
+          outline.style.transition = '';
         }
-        bubble.style.left = left + 'px';
-        bubble.style.width = width + 'px';
-        // بروزرسانی کلاس فعال
+        // حاشیهٔ داخلی ظاهری برای فضای padding
+        const bubblePadding = 8; // باعث می‌شود حباب کمی کوچکتر از دکمه باشد
+        bubble.style.left = (left + bubblePadding) + 'px';
+        bubble.style.width = Math.max(56, width - bubblePadding*2) + 'px';
+
+        // قاب رنگی کوچکتر در سمت چپ داخل حباب (آرایش وسط آیکن)
+        const outlineSize = Math.min(64, width + 8);
+        const outlineLeft = left + (width - outlineSize)/2;
+        outline.style.left = outlineLeft + 'px';
+        outline.style.width = outlineSize + 'px';
+        outline.style.height = outlineSize + 'px';
+
+        // کلاس فعال
         buttons.forEach((b,i)=>{
           b.classList.toggle('active', i===toIndex);
           b.setAttribute('aria-selected', String(i===toIndex));
           b.tabIndex = i===toIndex ? 0 : -1;
         });
+
+        // هم‌رنگ کردن آیکن درون حباب با رنگ آیکنِ دکمه فعال
+        const activeSvg = buttons[toIndex].querySelector('svg');
+        const bubbleSvg = bubble.querySelector('svg');
+        if(activeSvg && bubbleSvg){
+          // استفاده از CSS currentColor، کافی است رنگ را در دکمه‌ی فعال ست کنیم (کلاس active)
+          // ولی برای اطمینان، می‌گذاریم رنگ ها یکی شوند:
+          const computed = window.getComputedStyle(buttons[toIndex]).color;
+          bubbleSvg.style.color = computed;
+        }
       }
 
-      // نمایش صفحهٔ انتخاب‌شده (اسلاید افقی)
       function showPage(index){
         activeIndex = index;
-        // slide pages container by translateX
         pages.style.transform = `translateX(${ - index * 100 }%)`;
-        // set aria-hidden appropriately
         pageEls.forEach((p,i)=>{
-          p.style.minWidth = '100%';
           p.setAttribute('aria-hidden', String(i!==index));
         });
       }
 
-      // آماده‌سازی لیسنرها
       buttons.forEach((btn, i) => {
         btn.addEventListener('click', () => {
           updateBubble(i);
@@ -296,23 +350,25 @@
         });
       });
 
-      // رفتار صفحه بار اول
-      // قرار دادن pages به صورت افقی (با transition)
+      // آماده‌سازی و تنظیم اولیه
       pages.style.display = 'flex';
       pages.style.transition = 'transform .28s cubic-bezier(.2,.9,.2,1)';
-      showPage(activeIndex);
-
-      // تنظیم اولیه حباب پس از رندر (تا اندازه‌ها خوانده شوند)
       function init(){
-        // small delay to allow layout
-        setTimeout(()=> updateBubble(activeIndex, false), 20);
+        // مقداردهی اولیه، بدون انیمیشن برای جلوگیری از پرش
+        updateBubble(activeIndex, false);
+        showPage(activeIndex);
+        // پس از چند میلی‌ثانیه انیمیشن‌ها را بازگردانیم
+        setTimeout(()=> {
+          bubble.style.transition = '';
+          outline.style.transition = '';
+        }, 50);
       }
       window.addEventListener('load', init);
       window.addEventListener('resize', ()=> updateBubble(activeIndex, false));
 
-      // پشتیبانی کلید جهت‌دار برای عوض کردن تب
+      // پشتیبانی کلید جهت برای دسترسی
       window.addEventListener('keydown', (e)=>{
-        if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+        if(['ArrowLeft','ArrowRight'].includes(e.key)){
           e.preventDefault();
         }
         if(e.key === 'ArrowLeft'){
@@ -326,7 +382,7 @@
         }
       });
 
-      // برای لمس: سوایپ ساده
+      // لمس: سوایپ ساده
       let startX = null;
       pages.addEventListener('touchstart', (ev) => {
         startX = ev.touches[0].clientX;
@@ -337,7 +393,6 @@
         const dx = endX - startX;
         if(Math.abs(dx) > 40){
           if(dx < 0){
-            // سوایپ به سمت چپ -> بعدی
             const next = Math.min(buttons.length - 1, activeIndex + 1);
             updateBubble(next);
             showPage(next);
@@ -350,8 +405,9 @@
         startX = null;
       }, {passive:true});
 
-      // اجازه دهید آیکن‌ها با <img src="..."> جایگزین شوند:
-      // اگر می‌خواهید آیکن‌های داخل bubble متفاوت باشند، کافی است svg داخل .bubble-inner را تغییر دهید.
+      // نکته: برای جایگزینی آیکن‌ها، داخل هر <button> svg را با <img src="..."> عوض کنید.
+      // اگر می‌خواهید آیکنِ داخل حباب هم هم‌زمان تغییر کند، کافی است svgِ داخل bubbleInner را با همان svg جایگزین کنید یا
+      // در updateBubble آن را از دکمهٔ فعال clone کنید.
     })();
   </script>
 </body>
